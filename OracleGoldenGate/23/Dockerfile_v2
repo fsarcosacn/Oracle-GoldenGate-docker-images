@@ -1,0 +1,81 @@
+## Copyright (c) 2024, Oracle and/or its affiliates.
+ARG           BASE_IMAGE=oraclelinux:8
+#  hadolint ignore=DL3006
+FROM        ${BASE_IMAGE}
+LABEL         maintainer="Stephen Balousek<stephen.balousek@oracle.com>"
+
+ARG           INSTALLER
+ARG           OPATCH_ZIP=installers/OPatch/EMPTY
+ARG           ONEOFF_PATCHES=installers/OneOffPatches/EMPTY
+RUN           : ${INSTALLER:?}
+
+ENV           OGG_HOME               "/u01/ogg"
+ENV           OGG_DEPLOYMENT_HOME    "/u02"
+ENV           OGG_TEMPORARY_FILES    "/u03"
+ENV           OGG_DEPLOYMENT_SCRIPTS "/u01/ogg/scripts"
+ENV           PATH                   "${OGG_HOME}/bin:${PATH}"
+
+COPY          install-*.sh      /tmp/
+COPY          ${INSTALLER}      /tmp/installer.zip
+COPY          bin/              /usr/local/bin/
+
+RUN           bash -c  /tmp/install-prerequisites.sh && \
+              bash -c  /tmp/install-deployment.sh    && \
+              rm   -fr /tmp/*   /etc/nginx
+
+COPY          nginx/            /etc/nginx/
+
+# ==============================
+# Replace OPatch (if provided)
+# ==============================
+COPY ${OPATCH_ZIP} /tmp/opatch.zip
+
+
+RUN set -eux; \
+    if [ -s /tmp/opatch.zip ]; then \
+        echo "Replacing bundled OPatch with repo OPatch"; \
+        rm -rf /u01/ogg/OPatch; \
+        unzip -q /tmp/opatch.zip -d /u01/ogg; \
+        chown -R ogg:ogg /u01/ogg/OPatch; \
+        rm -f /tmp/opatch.zip; \
+    else \
+        echo "No OPatch ZIP provided, keeping bundled OPatch"; \
+    fi
+
+# ==============================
+# Copy and apply one-off patch (if provided)
+# ==============================
+COPY ${ONEOFF_PATCHES} /tmp/oneoffs/
+COPY apply-oneoff-opatch.sh /tmp/
+
+RUN set -eux; \
+    for p in /tmp/oneoffs/*; do \
+        if [ -s "$p" ]; then \
+            /tmp/apply-oneoff-opatch.sh "$p"; \
+        fi; \
+    done ; \
+    echo "Slimming GoldenGate runtime image"; \
+    rm -rf \
+        /tmp/apply-oneoff-opatch.sh \
+        /u01/ogg/jdk \
+        /u01/ogg/oui \
+        /u01/ogg/inventory \
+        /u01/ogg/cfgtoollogs \
+        /u01/ogg/install \
+        /u01/ogg/deinstall \
+        /u01/ogg/oraInst.loc \
+        /u01/ogg/OPatch \
+        /u01/ogg/.patch_storage
+
+# ==============================
+# Metadata (traceability)
+# ==============================
+LABEL ogg.ru.installer="${INSTALLER}"
+LABEL ogg.oneoff.patch="${ONEOFF_PATCHES}"
+
+
+EXPOSE        80 443
+VOLUME      [ "${OGG_DEPLOYMENT_HOME}", "${OGG_TEMPORARY_FILES}", "${OGG_DEPLOYMENT_SCRIPTS}" ]
+HEALTHCHECK   --start-period=90s --retries=1 \
+        CMD [ "/usr/local/bin/healthcheck" ]
+ENTRYPOINT  [ "/usr/local/bin/deployment-main.sh" ]
