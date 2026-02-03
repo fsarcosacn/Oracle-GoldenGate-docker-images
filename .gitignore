@@ -1,1 +1,9 @@
+# Ignore all GoldenGate installer archives
+OracleGoldenGate/23/installers/**/*.zip
+
+# Keep directory structure
 !OracleGoldenGate/23/installers/**/
+
+# Keep placeholder files
+!OracleGoldenGate/23/installers/**/.gitkeep
+
