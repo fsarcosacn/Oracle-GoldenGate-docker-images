@@ -14,6 +14,7 @@ The final runtime image closely matches Oracle’s official GoldenGate images in
 ## Supported Platforms
 
 • Oracle Linux 8 / 9
+
 • Docker or Podman  
 • OCI or Docker image format  
 
