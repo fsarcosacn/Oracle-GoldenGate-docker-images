@@ -158,9 +158,8 @@ Typical results:
 
 | Image Type | Size |
 |----------|------|
-Builder stage (temporary) | ~4.7 GB |
-Final runtime image | ~2.0–2.2 GB |
-Oracle official runtime image | ~1.0 GB |
+Builder stage (temporary) | ~4.0-5.0 GB |
+Final runtime image | ~2.0–3.0 GB |
 
 The builder image is **not intended to be kept**.
 
