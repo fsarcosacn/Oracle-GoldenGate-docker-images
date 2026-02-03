@@ -199,7 +199,8 @@ Oracle GoldenGate is a licensed Oracle product.
 This repository provides build automation only.  
 You are responsible for complying with Oracle licensing and support policies.
 
-This is **not an official Oracle repository**.
+This is **not an official Oracle repository**. 
+Oficial repo is here: https://github.com/oracle/docker-images/tree/main/OracleGoldenGate/23#build-an-oracle-goldengate-container-image
 
 ---
 
