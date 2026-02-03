@@ -192,15 +192,22 @@ This aligns with Oracle’s recommended container lifecycle.
 
 ---
 
-## Licensing and Disclaimer
+## Licensing and Usage Notes
 
-Oracle GoldenGate is a licensed Oracle product.
+All scripts, Dockerfiles, and build automation files provided in this repository are released under the **Universal Permissive License (UPL), Version 1.0**, unless otherwise noted.
 
-This repository provides build automation only.  
-You are responsible for complying with Oracle licensing and support policies.
+This repository **does not contain Oracle GoldenGate binaries**.
 
-This is **not an official Oracle repository**. 
-Oficial repo is here: https://github.com/oracle/docker-images/tree/main/OracleGoldenGate/23#build-an-oracle-goldengate-container-image
+To build or run Oracle GoldenGate, whether inside or outside a container, you must:
+
+- Download the Oracle GoldenGate software separately from Oracle
+- Accept the applicable Oracle Technology Network (OTN) license
+- Ensure you comply with Oracle licensing and support policies
+
+Oracle GoldenGate is a proprietary Oracle product.  
+Use of this repository does **not** grant any rights to Oracle software.
+
+This project is **not affiliated with, endorsed by, or supported by Oracle**.
 
 ---
 
