@@ -14,12 +14,12 @@ ENV OGG_TEMPORARY_FILES=/u03
 ENV OGG_DEPLOYMENT_SCRIPTS=/u01/ogg/scripts
 ENV PATH="${OGG_HOME}/bin:${PATH}"
 
-# sanity check
-RUN : "${INSTALLER:?INSTALLER argument is required}"
-
 # scripts
-COPY install-*.sh /tmp/
+COPY install-prerequisites.sh install-deployment.sh /tmp/
 COPY bin/ /usr/local/bin/
+
+# fail early with a clear message if INSTALLER was not provided
+RUN : "${INSTALLER:?INSTALLER build argument is required}"
 
 # installer
 COPY ${INSTALLER} /tmp/installer.zip
@@ -33,34 +33,17 @@ RUN bash /tmp/install-prerequisites.sh && \
 COPY nginx/ /etc/nginx/
 
 # ---------------------------------------------------------
-# Replace OPatch (optional)
+# OPatch + one-off patches
+#   - OPatch replacement: optional
+#   - One-off patches:    optional
+#   - Rule: if one-off patches are provided, OPATCH_ZIP is required
 # ---------------------------------------------------------
 COPY ${OPATCH_ZIP} /tmp/opatch.zip
-
-RUN set -eux; \
-    if [ -s /tmp/opatch.zip ]; then \
-        echo "Replacing OPatch"; \
-        rm -rf /u01/ogg/OPatch && \
-        unzip -q /tmp/opatch.zip -d /u01/ogg && \
-        chown -R ogg:ogg /u01/ogg/OPatch; \
-    else \
-        echo "Using bundled OPatch"; \
-    fi; \
-    rm -f /tmp/opatch.zip
-
-# ---------------------------------------------------------
-# Apply one-off patches (optional, supports many)
-# ---------------------------------------------------------
+COPY install-patches.sh apply-oneoff-opatch.sh /tmp/
 COPY ${ONEOFF_PATCHES} /tmp/oneoffs/
-COPY apply-oneoff-opatch.sh /tmp/
 
-RUN set -eux; \
-    for p in /tmp/oneoffs/*; do \
-        if [ -s "$p" ]; then \
-            /tmp/apply-oneoff-opatch.sh "$p"; \
-        fi; \
-    done; \
-    rm -rf /tmp/oneoffs && rm -f /tmp/apply-oneoff-opatch.sh
+RUN bash /tmp/install-patches.sh && \
+    rm -rf /tmp/*
 
 # ---------------------------------------------------------
 # Runtime cleanup (still in builder!)
@@ -73,7 +56,6 @@ RUN set -eux; \
         /u01/ogg/cfgtoollogs \
         /u01/ogg/install \
         /u01/ogg/deinstall \
-        /u01/ogg/oraInst.loc \
         /u01/ogg/OPatch \
         /u01/ogg/.patch_storage
 
