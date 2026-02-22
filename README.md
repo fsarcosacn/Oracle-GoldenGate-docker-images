@@ -78,6 +78,7 @@ OracleGoldenGate/23/
 ├── Dockerfile
 ├── install-prerequisites.sh
 ├── install-deployment.sh
+├── install-patches.sh
 ├── apply-oneoff-opatch.sh
 ├── bin/
 │   ├── deployment-main.sh
@@ -100,7 +101,7 @@ OracleGoldenGate/23/
 | Argument | Required | Description |
 |--------|----------|-------------|
 | `INSTALLER` | Yes | GoldenGate RU installer ZIP |
-| `OPATCH_ZIP` | No | OPatch ZIP to replace the bundled OPatch |
+| `OPATCH_ZIP` | Conditional | OPatch ZIP to replace the bundled OPatch. **Required when `ONEOFF_PATCHES` is provided.** |
 | `ONEOFF_PATCHES` | No | One or more one-off patch ZIP files |
 
 ---
@@ -122,10 +123,10 @@ podman build \
 
 Notes:
 
-• `INSTALLER` is mandatory  
-• `OPATCH_ZIP` is optional  
-• `ONEOFF_PATCHES` may point to a single ZIP or multiple ZIPs  
-• If optional arguments are not provided, the build completes using only the RU installer  
+• `INSTALLER` is mandatory
+• `OPATCH_ZIP` is optional when building with the RU only, but **required** when one-off patches are provided
+• `ONEOFF_PATCHES` may point to a single ZIP or multiple ZIPs
+• If optional arguments are not provided, the build completes using only the RU installer
 
 ---
 
@@ -189,6 +190,31 @@ podman image prune
 • Future patches require rebuilding the image  
 
 This aligns with Oracle’s recommended container lifecycle.
+
+---
+
+## Upstream Reference
+
+This repository is based on the official Oracle GoldenGate Docker images:
+
+[https://github.com/oracle/docker-images/tree/main/OracleGoldenGate/23](https://github.com/oracle/docker-images/tree/main/OracleGoldenGate/23)
+
+It extends the official build with additional patching capabilities and structural improvements, while preserving the same runtime layout and behaviour.
+
+---
+
+## Community Disclaimer
+
+This repository is a **personal, community contribution** and is **not an official Oracle release or an officially supported method**.
+
+It is shared openly in the hope that others find it useful.
+
+- Use of this repository is entirely **at your own risk**
+- No warranties, guarantees, or support commitments are made of any kind
+- Issues and suggestions are welcome via GitHub Issues and will be considered on a **best-effort basis**
+- This is a side project — response times and fixes cannot be guaranteed
+
+Pull requests are welcome.
 
 ---
 
