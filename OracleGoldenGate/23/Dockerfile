@@ -5,8 +5,8 @@ FROM oraclelinux:8 AS builder
 LABEL maintainer="Stephen Balousek <stephen.balousek@oracle.com>"
 
 ARG INSTALLER
-ARG OPATCH_ZIP=installers/OPatch/EMPTY
-ARG ONEOFF_PATCHES=installers/OneOffPatches/EMPTY
+ARG OPATCH_ZIP=installers/OPatch/.gitkeep
+ARG ONEOFF_PATCHES=installers/OneOffPatches/.gitkeep
 
 ENV OGG_HOME=/u01/ogg
 ENV OGG_DEPLOYMENT_HOME=/u02

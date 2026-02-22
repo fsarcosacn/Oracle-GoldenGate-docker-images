@@ -6,5 +6,4 @@ OracleGoldenGate/23/installers/**/*
 
 # Keep placeholder files
 !OracleGoldenGate/23/installers/**/.gitkeep
-!OracleGoldenGate/23/installers/**/EMPTY
 
